@@ -1,0 +1,6 @@
+- aby se to servraøi jednoduše testovalo, zachováme (minimálnì zatím) parsování v Oracle - tj. implementace v Oracle má BLOB IN, BLOB OUT
+- celá webová služby by se ideálnì mìla vygenerovat z toho wsdl, pøípadnì ještì lépe z xsd sekce ve wsdl + z nìkde uloženého názvu package, která se má provolávat
+- vymyslet, jak dostat sekci cesty k webové službì odpovídající environmentu (proj, tst, prod) do konfigurace mimo artefakt
+- vymyslet, jestli generovat proxy nebo co s tím, že když budu dìlat nezávislý deployment, budu mít každou službu na jiném portu, což minimálnì vypadá divnì; pokud možno se ale vyhnout deploymentu do aplikaèního serveru a nechat to jako microservices
+- doøešit autentikaci a pøípadnì její konfiguraci (nebo to teï zahardcodovat a èasem napojit na provysauth?)
+- rozmyslet a domluvit s Milanem jak s ukládáním do repositories - z mojeho pohledu by dávalo smysl mít v jednom repository jak tu javovou obálku, tak serverové zdrojáky...
