@@ -1,0 +1,36 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://com.provys/wsdl/soapwstest"
+  targetNamespace="http://com.provys/wsdl/soapwstest" elementFormDefault="qualified">
+  <xs:element name="Operation1Request">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Parameter1" type="xs:string"/>
+        <xs:element name="Parameter2" type="xs:dateTime"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Operation1Response">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="OBJECT_ID" type="tns:Uid"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Operation2Request">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Parameter1" type="xs:string"/>
+        <xs:element name="Parameter2" type="xs:dateTime"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Operation2Response">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="OBJECT_ID" type="tns:Uid"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:simpleType name="Uid">
+    <xs:restriction base="xs:positiveInteger"/>
+  </xs:simpleType>
+</xs:schema>

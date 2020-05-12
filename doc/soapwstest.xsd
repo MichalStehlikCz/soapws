@@ -1,0 +1,41 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="qualified"
+  elementFormDefault="qualified" targetNamespace="http://provys.com/wsdl/soapwstest"
+  xmlns:tns="http://provys.com/wsdl/soapwstest">
+  <xsd:element name="Operation1Request">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Parameter1" type="xsd:string"/>
+        <xsd:element name="Parameter2" type="xsd:dateTime"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="Operation1Response">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="OBJECT_ID" type="tns:Uid"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="Operation2Request">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Objects" type="tns:ObjectArray"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="Operation2Response">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Objects" type="tns:ObjectArray"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="ObjectArray">
+      <xsd:sequence>
+        <xsd:element name="OBJECT_ID" type="tns:Uid" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="Uid">
+    <xsd:restriction base="xsd:positiveInteger"/>
+  </xsd:simpleType>
+</xsd:schema>
