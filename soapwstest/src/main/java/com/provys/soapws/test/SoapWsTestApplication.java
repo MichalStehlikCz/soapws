@@ -11,13 +11,13 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 @ConfigurationPropertiesScan(basePackages = "com.provys")
 public class SoapWsTestApplication {
 
-	/**
-	 * Main method, executed to start Spring Boot application.
-	 *
-	 * @param args are command line arguments
-	 */
+  /**
+   * Main method, executed to start Spring Boot application.
+   *
+   * @param args are command line arguments
+   */
   public static void main(String[] args) {
-		//noinspection resource
-		SpringApplication.run(SoapWsTestApplication.class, args);
+    //noinspection resource
+    SpringApplication.run(SoapWsTestApplication.class, args);
   }
 }

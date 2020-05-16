@@ -1,6 +1,6 @@
 package com.provys.soapws.test;
 
-import com.provys.db.dbcontext.DbContext;
+import com.provys.db.provysdb.UserDbContext;
 import com.provys.soapws.DbHandledEndpoint;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
@@ -18,7 +18,7 @@ public class SoapWsTestEndpoint extends DbHandledEndpoint {
   private static final String PACKAGE = "KER_SoapWsTest_PG";
 
   @Autowired
-  public SoapWsTestEndpoint(DbContext dbContext,
+  public SoapWsTestEndpoint(UserDbContext dbContext,
       @Qualifier("soapWsTestSchemaValidator") Validator validator) {
     super(dbContext, validator);
   }

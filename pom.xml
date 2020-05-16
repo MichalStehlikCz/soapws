@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.provys.parent</groupId>
     <artifactId>parent</artifactId>
-    <version>1.6.0</version>
+    <version>1.7.0</version>
   </parent>
   <groupId>com.provys.soapws</groupId>
   <artifactId>soapws-parent</artifactId>
@@ -17,7 +17,9 @@
   </modules>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <db.version>2.1.0</db.version>
+    <common.version>3.13.0</common.version>
+    <auth.version>1.2.0</auth.version>
+    <db.version>3.3.0</db.version>
   </properties>
   <scm>
     <developerConnection>scm:git:https://github.com/MichalStehlikCz/soapws.git</developerConnection>
@@ -42,6 +44,35 @@
       <url>https://maven.pkg.github.com/MichalStehlikCz/Maven</url>
     </repository>
   </distributionManagement>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.provys.common</groupId>
+        <artifactId>common-exception</artifactId>
+        <version>${common.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.provys.common</groupId>
+        <artifactId>common-datatype</artifactId>
+        <version>${common.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.provys.auth</groupId>
+        <artifactId>auth-api</artifactId>
+        <version>${auth.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.provys.auth</groupId>
+        <artifactId>auth-oracle</artifactId>
+        <version>${auth.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.provys.db</groupId>
+        <artifactId>provysdb</artifactId>
+        <version>${db.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
   <build>
     <plugins>
       <plugin>
