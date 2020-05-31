@@ -1,13 +1,14 @@
-package com.provys.soapws.test;
+package com.provys.dbsoapws.configuration;
 
 import com.provys.common.datatype.DtBinaryData;
 import com.provys.common.datatype.DtUid;
 import com.provys.common.exception.InternalException;
 import com.provys.db.dbcontext.DbConnection;
 import com.provys.db.dbcontext.DbContext;
-import com.provys.db.dbcontext.DbResultSet;
 import com.provys.db.dbcontext.SqlException;
 import com.provys.db.provysdb.AdminDbContext;
+import com.provys.dbsoapws.model.EndpointDefinition;
+import com.provys.dbsoapws.model.ServiceDefinition;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class DbConfigReader {
             + "FROM\n"
             + "    vid_device_vw device\n"
             + "WHERE\n"
-            + "      (device.device_id=?)")) {
+            + "      (device.name_nm=?)")) {
       getDeviceStatement.setNonNullString(1, deviceNm);
       try (var resultSet = getDeviceStatement.executeQuery()) {
         if (!resultSet.next()) {
@@ -86,14 +87,14 @@ public class DbConfigReader {
       throws SQLException {
     try (var getSoapWsStatement = connection.prepareStatement(
         "SELECT\n"
-            + "    VID_DevIfaceParam_EP.mfw_GetValue_DevIface(deviface.deviface_id, \"PORT\")\n"
-            + "  , VID_DevIfaceParam_EP.mfw_GetValue_DevIface(deviface.deviface_id, \"ADDRESS\")\n"
-            + "  , VID_DevIfaceParam_EP.mfw_GetValue_DevIface(deviface.deviface_id, \"ROOT\")\n"
+            + "    VID_DevIfaceParam_EP.mfw_GetValue_DevIface(deviface.deviface_id, 'PORT')\n"
+            + "  , VID_DevIfaceParam_EP.mfw_GetValue_DevIface(deviface.deviface_id, 'ADDRESS')\n"
+            + "  , VID_DevIfaceParam_EP.mfw_GetValue_DevIface(deviface.deviface_id, 'ROOT')\n"
             + "FROM\n"
             + "    vid_devtype_vw devtype\n"
             + "  , vid_deviface_vw deviface\n"
             + "WHERE\n"
-            + "      (devtype.name_nm=\"DBSOAPWSSRV\")\n"
+            + "      (devtype.name_nm='DBSOAPWSSRV')\n"
             + "  AND (deviface.device_id=?)\n"
             + "  AND (deviface.devtype_id=devtype.devtype_id)")) {
       getSoapWsStatement.setNonNullDtUid(1, deviceId);
@@ -105,7 +106,7 @@ public class DbConfigReader {
           serviceParams.address = resultSet.getNullableString(2);
           if (resultSet.next()) {
             throw new InternalException("Incorrect configuration for device " + deviceId
-                + ": multiple interfaces of type SOAPWS");
+                + ": multiple interfaces of type DBSOAPWSSRV");
           }
           return serviceParams;
         }
@@ -118,21 +119,20 @@ public class DbConfigReader {
       throws SQLException {
     try (var getSoapWsStatement = connection.prepareStatement(
         "SELECT\n"
-            + "    VID_DevIfaceParam_EP.mfw_GetValue_DevIface(deviface.deviface_id, \"NAME\")\n"
-            + "  , VID_DevIfaceParam_EP.mfw_GetValue_DevIface(deviface.deviface_id, \"PATH\")\n"
+            + "    VID_DevIfaceParam_EP.mfw_GetValue_DevIface(deviface.deviface_id, 'NAME')\n"
+            + "  , VID_DevIfaceParam_EP.mfw_GetValue_DevIface(deviface.deviface_id, 'PATH')\n"
             + "  , VID_DevIfaceParam_EP.mfw_GetValue_DevIface(deviface.deviface_id,"
-            + " \"PACKAGE_NM\")\n"
+            + " 'PACKAGE_NM')\n"
             + "  , KER_AttrVal_EP.mf_GetValueB_NMObject(\n"
-            + "          VID_DevIfaceParam_EP.mfw_GetID_DevIface(deviface.deviface_id,"
-            + " \"ROOT\")\n"
-            + "        , \"DEVIFACEPARAM\"\n"
-            + "        , \"BVALUE\"\n"
+            + "          VID_DevIfaceParam_EP.mfw_GetID_DevIface(deviface.deviface_id, 'XSD')\n"
+            + "        , 'DEVIFACEPARAM'\n"
+            + "        , 'BVALUE'\n"
             + "      )\n"
             + "FROM\n"
             + "    vid_devtype_vw devtype\n"
             + "  , vid_deviface_vw deviface\n"
             + "WHERE\n"
-            + "      (devtype.name_nm=\"DBSOAPWSSERVICE\")\n"
+            + "      (devtype.name_nm='DBSOAPWSSERVICE')\n"
             + "  AND (deviface.device_id=?)\n"
             + "  AND (deviface.devtype_id=devtype.devtype_id)")) {
       getSoapWsStatement.setNonNullDtUid(1, deviceId);

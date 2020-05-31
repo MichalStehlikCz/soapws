@@ -1,4 +1,4 @@
-package com.provys.soapws.test;
+package com.provys.dbsoapws;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
  */
 @SpringBootApplication(scanBasePackages = "com.provys")
 @ConfigurationPropertiesScan(basePackages = "com.provys")
-public class SoapWsTestApplication {
+public class DbSoapWsApplication {
 
   /**
    * Main method, executed to start Spring Boot application.
@@ -18,6 +18,6 @@ public class SoapWsTestApplication {
    */
   public static void main(String[] args) {
     //noinspection resource
-    SpringApplication.run(SoapWsTestApplication.class, args);
+    SpringApplication.run(DbSoapWsApplication.class, args);
   }
 }

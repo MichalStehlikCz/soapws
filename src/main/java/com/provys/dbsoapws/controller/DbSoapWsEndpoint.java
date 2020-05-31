@@ -1,9 +1,10 @@
-package com.provys.soapws.test;
+package com.provys.dbsoapws.controller;
 
 import com.provys.common.exception.InternalException;
 import com.provys.db.dbcontext.DbContext;
 import com.provys.db.dbcontext.SqlException;
 import com.provys.db.provysdb.UserDbContext;
+import com.provys.dbsoapws.model.ServiceDefinition;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -18,7 +19,7 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint
-public class SoapWsDbEndpoint {
+public class DbSoapWsEndpoint {
 
   private static final String OPERATION_SUFFIX = "Request";
 
@@ -26,7 +27,7 @@ public class SoapWsDbEndpoint {
   private final DbContext dbContext;
 
   @Autowired
-  public SoapWsDbEndpoint(ServiceDefinition serviceDefinition, UserDbContext dbContext) {
+  public DbSoapWsEndpoint(ServiceDefinition serviceDefinition, UserDbContext dbContext) {
     this.serviceDefinition = serviceDefinition;
     this.dbContext = dbContext;
   }

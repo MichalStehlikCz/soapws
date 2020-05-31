@@ -1,8 +1,9 @@
-package com.provys.soapws.test;
+package com.provys.dbsoapws.configuration;
 
 import static org.checkerframework.checker.nullness.NullnessUtil.castNonNull;
 
 import com.provys.common.exception.InternalException;
+import com.provys.dbsoapws.controller.DbSoapWsEndpoint;
 import java.util.Objects;
 import javax.xml.transform.stream.StreamSource;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -16,12 +17,12 @@ public class DbEndpointMapping extends AbstractEndpointMapping {
   protected void initApplicationContext() {
     super.initApplicationContext();
     try {
-        setDefaultEndpoint(new MethodEndpoint("soapWsDbEndpoint",
+        setDefaultEndpoint(new MethodEndpoint("dbSoapWsEndpoint",
             Objects.requireNonNull(castNonNull(getApplicationContext())),
-            SoapWsDbEndpoint.class.getMethod("operation", StreamSource.class)
+            DbSoapWsEndpoint.class.getMethod("operation", StreamSource.class)
         ));
     } catch (NoSuchMethodException e) {
-      throw new InternalException("Invalid reference to SoapWsDbEndpoint#operation", e);
+      throw new InternalException("Invalid reference to DbSoapWsEndpoint#operation", e);
     }
   }
 

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://provys.com/wsdl/std/dbsoapwstest2"
+  xmlns:tns="http://provys.com/wsdl/std/dbsoapwstest2" elementFormDefault="qualified"
+  attributeFormDefault="qualified">
+  <!-- generic types -->
+  <xsd:complexType name="ErrorInformation">
+    <xsd:sequence>
+      <xsd:element type="xsd:string" name="Status" minOccurs="1" maxOccurs="1"/>
+      <xsd:element type="xsd:string" name="ErrorName" minOccurs="1" maxOccurs="1"/>
+      <xsd:element type="xsd:string" name="ErrorText" minOccurs="0" maxOccurs="1" nillable="true"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <!-- end of generic types -->
+  <!-- specific types -->
+  <xsd:simpleType name="EnumType" final="restriction">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Type1"/>
+      <xsd:enumeration value="Type2"/>
+      <xsd:enumeration value="Type3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="ShortString" final="restriction">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="2"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Uid" final="restriction">
+    <xsd:restriction base="xsd:integer"/>
+  </xsd:simpleType>
+  <!-- end of types -->
+  <xsd:element name="Operation1Request">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element type="xsd:string" name="RequestID" minOccurs="1" maxOccurs="1"/>
+        <xsd:element type="tns:Uid" name="ObjectID" minOccurs="1" maxOccurs="1"/>
+        <xsd:element type="tns:EnumType" name="EnumType" minOccurs="1" maxOccurs="1"/>
+        <xsd:element type="tns:ShortString" name="Short" minOccurs="1" maxOccurs="1"/>
+        <xsd:element type="xsd:date" name="ValidFrom" minOccurs="0" maxOccurs="1"/>
+        <xsd:element type="xsd:dateTime" name="SignedOn" minOccurs="0" maxOccurs="1"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="Operation1Result">
+    <xsd:sequence>
+      <xsd:element type="xsd:string" name="RequestID"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="CreateSubjectResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element type="tns:Operation1Result" name="Operation1Result" minOccurs="1"
+          maxOccurs="1"/>
+        <xsd:element type="tns:ErrorInformation" name="ErrorInformation" minOccurs="1"
+          maxOccurs="1"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="Operation2Request">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element type="xsd:string" name="RequestID" minOccurs="1" maxOccurs="1"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="Operation2Response">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element type="xsd:string" name="ResponseID" minOccurs="1" maxOccurs="1"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>

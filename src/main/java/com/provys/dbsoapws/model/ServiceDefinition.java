@@ -1,4 +1,4 @@
-package com.provys.soapws.test;
+package com.provys.dbsoapws.model;
 
 import com.provys.common.exception.InternalException;
 import java.util.Collection;
@@ -8,6 +8,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * Definition of services to be exposed.
+ */
 public class ServiceDefinition {
 
   private final @Nullable Integer port;
@@ -15,14 +18,31 @@ public class ServiceDefinition {
   private final String servicePath;
   private final Map<String, EndpointDefinition> endpointsByNamespace;
 
+  /**
+   * Create service definition based on supplied parameters.
+   *
+   * @param port is port on which service should be available; null means service.port config will
+   *            be used
+   * @param address is network adapter on which service should be available; null means all
+   * @param servicePath is path under which services will be available; path of each service is
+   *                   appended to it
+   * @param endpoints is collections of endpoints that should be exposed
+   */
   public ServiceDefinition(@Nullable Integer port, @Nullable String address, String servicePath,
       Collection<EndpointDefinition> endpoints) {
     this.port = port;
     this.address = address;
-    this.servicePath = servicePath;
+    if (servicePath.isBlank()) {
+      this.servicePath = "/";
+    } else if (servicePath.charAt(0) == '/') {
+      this.servicePath = servicePath;
+    } else {
+      this.servicePath = '/' + servicePath;
+    }
     this.endpointsByNamespace = endpoints.stream()
-        .collect(Collectors.toUnmodifiableMap(endpoint -> endpoint.getXsdSchema().getTargetNamespace(),
-            Function.identity()));
+        .collect(
+            Collectors.toUnmodifiableMap(endpoint -> endpoint.getXsdSchema().getTargetNamespace(),
+                Function.identity()));
   }
 
   /**
@@ -52,6 +72,12 @@ public class ServiceDefinition {
     return servicePath;
   }
 
+  /**
+   * Retrieve end point description for specified namespace.
+   *
+   * @param namespace is namespace of request
+   * @return endpoint definition corresponding to specified namespace
+   */
   public EndpointDefinition getForNamespace(String namespace) {
     var result = endpointsByNamespace.get(namespace);
     if (result == null) {
@@ -60,6 +86,11 @@ public class ServiceDefinition {
     return result;
   }
 
+  /**
+   * Collection of configured endpoints.
+   *
+   * @return collection of endpoints service consists of
+   */
   public Collection<EndpointDefinition> getEndpoints() {
     return endpointsByNamespace.values();
   }

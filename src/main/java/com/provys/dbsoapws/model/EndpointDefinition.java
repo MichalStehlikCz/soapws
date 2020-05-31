@@ -1,4 +1,4 @@
-package com.provys.soapws.test;
+package com.provys.dbsoapws.model;
 
 import java.util.Objects;
 import org.checkerframework.checker.nullness.qual.Nullable;
