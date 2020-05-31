@@ -7,6 +7,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Types;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
 import org.xml.sax.SAXException;
@@ -17,11 +20,9 @@ import org.xml.sax.SAXException;
 public abstract class DbHandledEndpoint {
 
   private final DbContext dbContext;
-  private final Validator validator;
 
-  public DbHandledEndpoint(DbContext dbContext, Validator validator) {
+  public DbHandledEndpoint(DbContext dbContext) {
     this.dbContext = dbContext;
-    this.validator = validator;
   }
 
   private static byte[] readRequestData(StreamSource request) {
@@ -29,16 +30,6 @@ public abstract class DbHandledEndpoint {
       return requestStream.readAllBytes();
     } catch (IOException e) {
       throw new InternalException("Error reading request data", e);
-    }
-  }
-
-  private void validateRequest(byte[] requestData) {
-    try (var requestStream = new ByteArrayInputStream(requestData)) {
-      validator.validate(new StreamSource(requestStream));
-    } catch (IOException e) {
-      throw new InternalException("Internal exception validating request", e);
-    } catch (SAXException e) {
-      throw new InternalException("Document validation failure: " + e.getMessage(), e);
     }
   }
 
@@ -72,12 +63,22 @@ public abstract class DbHandledEndpoint {
    * Process request - validate data and call server procedure.
    *
    * @param request contains request payload
-   * @param method  is method to be called on server
    * @return result of server method call
    */
-  protected StreamSource processRequest(StreamSource request, String method) {
+  protected StreamSource processRequest(StreamSource request) {
     byte[] requestData = readRequestData(request);
-    validateRequest(requestData);
+    String method;
+    XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
+    try (var requestStream = new ByteArrayInputStream(requestData)) {
+      XMLEventReader reader = xmlInputFactory.createXMLEventReader(requestStream);
+      var element = reader.nextTag().asStartElement();
+      method = element.getName().getLocalPart();
+
+    } catch (XMLStreamException | IOException e) {
+      throw new InternalException("cannot read XML stream", e);
+    }
+
+//    validateRequest(requestData);
     return serverCall(requestData, method);
   }
 
@@ -85,7 +86,7 @@ public abstract class DbHandledEndpoint {
   public String toString() {
     return "DbHandledEndpoint{"
         + "dbContext=" + dbContext
-        + ", validator=" + validator
+//        + ", validator=" + validator
         + '}';
   }
 }
