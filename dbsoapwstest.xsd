@@ -46,7 +46,7 @@
       <xsd:element type="xsd:string" name="RequestID"/>
     </xsd:sequence>
   </xsd:complexType>
-  <xsd:element name="CreateSubjectResponse">
+  <xsd:element name="Operation1Response">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element type="tns:Operation1Result" name="Operation1Result" minOccurs="1"

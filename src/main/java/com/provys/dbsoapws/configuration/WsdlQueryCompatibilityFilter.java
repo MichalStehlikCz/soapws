@@ -10,11 +10,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 
-@Component
-@Order(2)
 public class WsdlQueryCompatibilityFilter implements Filter {
 
   @Override

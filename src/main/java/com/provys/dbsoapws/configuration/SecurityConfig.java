@@ -26,9 +26,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
         .csrf().disable()
         .authorizeRequests()
-        .antMatchers("/**/*\\.wsdl").permitAll()
-        .antMatchers("/**/*\\?wsdl").permitAll()
-        .antMatchers("/**/*\\.xsd").permitAll()
+        .antMatchers("/**/*.wsdl").permitAll()
+        .antMatchers("/**/*?wsdl").permitAll()
+        .antMatchers("/**/*.xsd").permitAll()
         .anyRequest().hasRole("USER")
         .and().httpBasic();
   }

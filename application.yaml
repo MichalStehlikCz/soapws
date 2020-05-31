@@ -1,6 +1,2 @@
 logging:
   config: log4j2.xml
-provysdb:
-  maxpoolsize: 2
-  validateonborrow: true
-  validateskipuntil: 3

@@ -31,4 +31,11 @@ public class WebServiceConfig extends WsConfigurerAdapter {
     return new ServletRegistrationBean<>(servlet,
         serviceDefinition.getServicePath() + "/*");
   }
+
+  @Bean
+  public FilterRegistrationBean<WsdlQueryCompatibilityFilter> registerRequestLogFilter() {
+    var reg = new FilterRegistrationBean<>(new WsdlQueryCompatibilityFilter());
+    reg.setOrder(1);
+    return reg;
+  }
 }

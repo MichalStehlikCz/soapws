@@ -1,0 +1,6 @@
+security:
+  filter-order: 2
+provysdb:
+  maxpoolsize: 5
+  validateonborrow: true
+  validateskipuntil: 3
