@@ -31,7 +31,7 @@ public class DbConfigReader {
   private final DbContext dbContext;
 
   @Autowired
-  public DbConfigReader(@Value("${soapwsdb.deviceNm:DBSOAPWSTEST}") String deviceNm,
+  public DbConfigReader(@Value("${dbsoapws.deviceNm}") String deviceNm,
       AdminDbContext dbContext) {
     this.deviceNm = deviceNm;
     this.dbContext = dbContext;
