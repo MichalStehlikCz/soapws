@@ -78,7 +78,7 @@ public class DbSoapWsEndpoint {
     }
   }
 
-//  @PayloadRoot(namespace = "http://com.provys/wsdl/soapwstest", localPart = "Operation1")
+  //  @PayloadRoot(namespace = "http://com.provys/wsdl/soapwstest", localPart = "Operation1")
   @ResponsePayload
   public StreamSource operation(@RequestPayload StreamSource request) {
     byte[] requestData = readRequestData(request);

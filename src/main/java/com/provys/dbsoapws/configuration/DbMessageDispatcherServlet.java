@@ -17,7 +17,7 @@ import org.springframework.xml.xsd.XsdSchema;
 
 /**
  * Special message dispatcher servlet that takes list of xsd files and exposes them as wsdls and
- * that routs all requests to single DB endpoint
+ * that routes all requests to single DB endpoint.
  */
 class DbMessageDispatcherServlet extends MessageDispatcherServlet {
 

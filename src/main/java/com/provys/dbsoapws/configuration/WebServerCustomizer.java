@@ -40,9 +40,9 @@ public class WebServerCustomizer
 
   @Override
   public String toString() {
-    return "WebServerCustomizer{" +
-        "port=" + port +
-        ", address='" + address + '\'' +
-        '}';
+    return "WebServerCustomizer{"
+        + "port=" + port
+        + ", address='" + address + '\''
+        + '}';
   }
 }

@@ -17,10 +17,10 @@ public class DbEndpointMapping extends AbstractEndpointMapping {
   protected void initApplicationContext() {
     super.initApplicationContext();
     try {
-        setDefaultEndpoint(new MethodEndpoint("dbSoapWsEndpoint",
-            Objects.requireNonNull(castNonNull(getApplicationContext())),
-            DbSoapWsEndpoint.class.getMethod("operation", StreamSource.class)
-        ));
+      setDefaultEndpoint(new MethodEndpoint("dbSoapWsEndpoint",
+          Objects.requireNonNull(castNonNull(getApplicationContext())),
+          DbSoapWsEndpoint.class.getMethod("operation", StreamSource.class)
+      ));
     } catch (NoSuchMethodException e) {
       throw new InternalException("Invalid reference to DbSoapWsEndpoint#operation", e);
     }

@@ -11,6 +11,14 @@ public class EndpointDefinition {
   private final String packageNm;
   private final XsdSchema xsdSchema;
 
+  /**
+   * Create new endpoint definition with supplied properties.
+   *
+   * @param name is name of endpoint
+   * @param path is path (not used at the moment)
+   * @param packageNm is package handling calls to this endpoint
+   * @param xsdSchema is xsd defining requests for this endpoint
+   */
   public EndpointDefinition(String name, @Nullable String path, String packageNm,
       XsdSchema xsdSchema) {
     this.name = name;
