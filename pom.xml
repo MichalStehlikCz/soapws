@@ -13,7 +13,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <common.version>3.15.0</common.version>
-    <auth.version>1.2.0</auth.version>
+    <auth.version>1.2.1</auth.version>
     <db.version>3.5.0</db.version>
   </properties>
   <scm>
