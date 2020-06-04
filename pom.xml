@@ -8,7 +8,7 @@
   </parent>
   <groupId>com.provys.dbsoapws</groupId>
   <artifactId>dbsoapws</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.1</version>
   <packaging>jar</packaging>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,7 +18,7 @@
   </properties>
   <scm>
     <developerConnection>scm:git:https://github.com/MichalStehlikCz/soapws.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>v1.0.1</tag>
   </scm>
   <repositories>
     <repository>
