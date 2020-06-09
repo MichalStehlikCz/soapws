@@ -9,6 +9,7 @@ public class EndpointDefinition {
   private final String name;
   private final @Nullable String path;
   private final String packageNm;
+  private final String authProvider;
   private final XsdSchema xsdSchema;
 
   /**
@@ -17,13 +18,15 @@ public class EndpointDefinition {
    * @param name is name of endpoint
    * @param path is path (not used at the moment)
    * @param packageNm is package handling calls to this endpoint
+   * @param authProvider is authentication provider used for this endpoint
    * @param xsdSchema is xsd defining requests for this endpoint
    */
   public EndpointDefinition(String name, @Nullable String path, String packageNm,
-      XsdSchema xsdSchema) {
+      String authProvider, XsdSchema xsdSchema) {
     this.name = name;
     this.path = path;
     this.packageNm = packageNm;
+    this.authProvider = authProvider;
     this.xsdSchema = xsdSchema;
   }
 
@@ -55,6 +58,15 @@ public class EndpointDefinition {
   }
 
   /**
+   * Value of field authProvider.
+   *
+   * @return value of field authProvider
+   */
+  public String getAuthProvider() {
+    return authProvider;
+  }
+
+  /**
    * Value of field xsdSchema.
    *
    * @return value of field xsdSchema
@@ -75,6 +87,7 @@ public class EndpointDefinition {
     return name.equals(that.name)
         && Objects.equals(path, that.path)
         && packageNm.equals(that.packageNm)
+        && authProvider.equals(that.authProvider)
         && xsdSchema.equals(that.xsdSchema);
   }
 
@@ -83,6 +96,7 @@ public class EndpointDefinition {
     int result = name.hashCode();
     result = 31 * result + (path != null ? path.hashCode() : 0);
     result = 31 * result + packageNm.hashCode();
+    result = 31 * result + authProvider.hashCode();
     result = 31 * result + xsdSchema.hashCode();
     return result;
   }
@@ -93,6 +107,7 @@ public class EndpointDefinition {
         + "name='" + name + '\''
         + ", path='" + path + '\''
         + ", packageNm='" + packageNm + '\''
+        + ", authProvider='" + authProvider + '\''
         + ", xsdSchema=" + xsdSchema
         + '}';
   }
