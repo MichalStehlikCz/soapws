@@ -37,14 +37,16 @@ public class WsdlQueryCompatibilityFilter implements Filter {
   }
 
   @Override
-  public void doFilter(final ServletRequest request, final ServletResponse response,
+  public void doFilter(final ServletRequest req, final ServletResponse response,
       final FilterChain chain)
       throws IOException, ServletException {
-    final HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-    if ("GET".equals(httpServletRequest.getMethod())
-        && "wsdl".equalsIgnoreCase(httpServletRequest.getQueryString())) {
-      var requestWrapper = new WsdlQueryRequestWrapper(httpServletRequest);
-      chain.doFilter(requestWrapper, response);
+    final HttpServletRequest request = (HttpServletRequest) req;
+    if ("GET".equals(request.getMethod())
+        && "wsdl".equalsIgnoreCase(request.getQueryString())) {
+      var requestWrapper = new WsdlQueryRequestWrapper(request);
+      request.getSession().getServletContext()
+          .getRequestDispatcher(request.getServletPath() + request.getPathInfo() + ".wsdl")
+          .forward(requestWrapper, response);
     } else {
       chain.doFilter(request, response);
     }
