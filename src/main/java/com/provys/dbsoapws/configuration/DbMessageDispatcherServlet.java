@@ -1,6 +1,7 @@
 package com.provys.dbsoapws.configuration;
 
 import com.provys.common.exception.InternalException;
+import com.provys.dbsoapws.model.EndpointDefinition;
 import com.provys.dbsoapws.model.ServiceDefinition;
 import java.util.Locale;
 import java.util.Map;
@@ -23,37 +24,41 @@ class DbMessageDispatcherServlet extends MessageDispatcherServlet {
 
   private static final long serialVersionUID = 4876097123271799936L;
 
-  /** Suffix of a WSDL request uri. */
+  /**
+   * Suffix of a WSDL request uri.
+   */
   private static final String WSDL_SUFFIX_NAME = ".wsdl";
 
-  /** Suffix of a XSD request uri. */
+  /**
+   * Suffix of a XSD request uri.
+   */
   private static final String XSD_SUFFIX_NAME = ".xsd";
 
   private final Map<String, XsdSchema> xsdSchemas;
   private final Map<String, WsdlDefinition> wsdlDefinitions;
 
-  private static WsdlDefinition buildWsdlFromXsd(String name, XsdSchema xsdSchema) {
+  private static WsdlDefinition buildWsdl(EndpointDefinition endpointDefinition) {
     var wsdlDefinition = new DefaultWsdl11Definition();
-    wsdlDefinition.setPortTypeName(name + "Port");
-    wsdlDefinition.setLocationUri('/' + name.toLowerCase(Locale.ENGLISH));
-    wsdlDefinition.setTargetNamespace(xsdSchema.getTargetNamespace());
-    wsdlDefinition.setSchema(xsdSchema);
+    wsdlDefinition.setPortTypeName(endpointDefinition.getName() + "Port");
+    wsdlDefinition.setLocationUri(endpointDefinition.getPath());
+    wsdlDefinition.setTargetNamespace(endpointDefinition.getXsdSchema().getTargetNamespace());
+    wsdlDefinition.setSchema(endpointDefinition.getXsdSchema());
     try {
       wsdlDefinition.afterPropertiesSet();
       return wsdlDefinition;
     } catch (Exception e) {
-      throw new InternalException("Error preparing wsdl definition from xsd " + name, e);
+      throw new InternalException(
+          "Error preparing wsdl definition from xsd " + endpointDefinition.getName(), e);
     }
   }
 
   DbMessageDispatcherServlet(ServiceDefinition serviceDefinition) {
     this.xsdSchemas = serviceDefinition.getEndpoints().stream()
-        .map(epd -> Map.entry(epd.getName().toLowerCase(Locale.ENGLISH), epd.getXsdSchema()))
-        .collect(Collectors.toUnmodifiableMap(Entry::getKey, Entry::getValue));
+        .collect(Collectors.toUnmodifiableMap(epd -> epd.getPath() + XSD_SUFFIX_NAME,
+            EndpointDefinition::getXsdSchema));
     this.wsdlDefinitions = serviceDefinition.getEndpoints().stream()
-        .map(epd -> Map.entry(epd.getName().toLowerCase(Locale.ENGLISH),
-            buildWsdlFromXsd(epd.getName(), epd.getXsdSchema())))
-        .collect(Collectors.toUnmodifiableMap(Entry::getKey, Entry::getValue));
+        .collect(Collectors.toUnmodifiableMap(epd -> epd.getPath() + WSDL_SUFFIX_NAME,
+            DbMessageDispatcherServlet::buildWsdl));
   }
 
   @Override
@@ -61,8 +66,7 @@ class DbMessageDispatcherServlet extends MessageDispatcherServlet {
   protected @Nullable WsdlDefinition getWsdlDefinition(HttpServletRequest request) {
     if (HttpTransportConstants.METHOD_GET.equals(request.getMethod())
         && request.getRequestURI().endsWith(WSDL_SUFFIX_NAME)) {
-      String fileName = WebUtils.extractFilenameFromUrlPath(request.getRequestURI());
-      return wsdlDefinitions.get(fileName);
+      return wsdlDefinitions.get(request.getServletPath());
     }
     return null;
   }
@@ -72,8 +76,7 @@ class DbMessageDispatcherServlet extends MessageDispatcherServlet {
   protected @Nullable XsdSchema getXsdSchema(HttpServletRequest request) {
     if (HttpTransportConstants.METHOD_GET.equals(request.getMethod())
         && request.getRequestURI().endsWith(XSD_SUFFIX_NAME)) {
-      String fileName = WebUtils.extractFilenameFromUrlPath(request.getRequestURI());
-      return xsdSchemas.get(fileName);
+      return xsdSchemas.get(request.getServletPath());
     }
     return null;
   }

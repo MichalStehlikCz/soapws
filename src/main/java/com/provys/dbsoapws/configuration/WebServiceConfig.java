@@ -5,6 +5,7 @@ import com.provys.dbsoapws.model.EndpointDefinition;
 import com.provys.dbsoapws.model.ServiceDefinition;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -43,8 +44,9 @@ public class WebServiceConfig extends WsConfigurerAdapter {
     servlet.setTransformWsdlLocations(true);
     validateEndpoints(serviceDefinition.getEndpoints());
     //noinspection ZeroLengthArrayAllocation
-    var urlMappings = serviceDefinition.getEndpoints().stream()
-        .map(EndpointDefinition::getPath)
+    var urlMappings = Stream.concat(serviceDefinition.getEndpoints().stream()
+            .map(EndpointDefinition::getPath),
+        Stream.of("*.wsdl", "*.xsd"))
         .collect(Collectors.toUnmodifiableList())
         .toArray(new String[0]);
     return new ServletRegistrationBean<>(servlet, urlMappings);
