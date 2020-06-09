@@ -9,14 +9,19 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Types;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.stream.StreamSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+import org.springframework.ws.transport.context.TransportContext;
+import org.springframework.ws.transport.context.TransportContextHolder;
+import org.springframework.ws.transport.http.HttpServletConnection;
 
 @Endpoint
 public class DbSoapWsEndpoint {
@@ -40,12 +45,23 @@ public class DbSoapWsEndpoint {
     }
   }
 
-  private String getDbProcedure(byte[] requestData) {
+  private String getDbProcedure(byte[] requestData, String uri) {
     XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
     try (var requestStream = new ByteArrayInputStream(requestData)) {
       XMLEventReader reader = xmlInputFactory.createXMLEventReader(requestStream);
       var element = reader.nextTag().asStartElement();
       var namespace = element.getName().getNamespaceURI();
+      var endpoint = serviceDefinition.getForNamespace(namespace);
+      /* Verify endpoint against uri - while spring can handle endpoint resolution from request,
+         security is filtered on uri level.
+         We cannot use default Spring approach where single MessageDispatcher works with one
+         security configuration as we cannot create varying number of message dispatchers based on
+         configuration.
+       */
+      if (!('/' + endpoint.getName()).equalsIgnoreCase(uri)) {
+        throw new InternalException("Namespace does not correspond to use uri (uri " + uri
+            + ", resolved endpoint " + endpoint.getName());
+      }
       var packageNm = serviceDefinition.getForNamespace(namespace).getPackageNm();
       var method = element.getName().getLocalPart();
       if (!method.endsWith(OPERATION_SUFFIX)) {
@@ -59,11 +75,12 @@ public class DbSoapWsEndpoint {
     }
   }
 
-  private StreamSource serverCall(byte[] requestData) {
+  private StreamSource serverCall(byte[] requestData, String uri) {
+    var dbProcedure = getDbProcedure(requestData, uri);
     try (var connection = dbContext.getConnection();
         var statement = connection.prepareCall(
             "BEGIN\n"
-                + "  " + getDbProcedure(requestData) + "(\n"
+                + "  " + dbProcedure + "(\n"
                 + "        ?\n"
                 + "      , ?\n"
                 + "    );\n"
@@ -78,11 +95,15 @@ public class DbSoapWsEndpoint {
     }
   }
 
-  //  @PayloadRoot(namespace = "http://com.provys/wsdl/soapwstest", localPart = "Operation1")
   @ResponsePayload
-  public StreamSource operation(@RequestPayload StreamSource request) {
+  public StreamSource operation(@RequestPayload StreamSource request,
+      MessageContext messageContext) {
     byte[] requestData = readRequestData(request);
-    return serverCall(requestData);
+    TransportContext context = TransportContextHolder.getTransportContext();
+    @SuppressWarnings("resource") // we do not manage this connection, only access its properties
+    HttpServletConnection connection = (HttpServletConnection )context.getConnection();
+    HttpServletRequest httpRequest = connection.getHttpServletRequest();
+    return serverCall(requestData, httpRequest.getServletPath() + httpRequest.getPathInfo());
   }
 
   @Override

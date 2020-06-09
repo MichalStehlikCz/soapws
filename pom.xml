@@ -13,8 +13,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <common.version>3.16.2</common.version>
-    <auth.version>2.0.1</auth.version>
-    <db.version>3.6.0</db.version>
+    <auth.version>3.0.1</auth.version>
+    <db.version>3.7.0</db.version>
   </properties>
   <scm>
     <developerConnection>scm:git:https://github.com/MichalStehlikCz/soapws.git</developerConnection>
@@ -58,7 +58,22 @@
       </dependency>
       <dependency>
         <groupId>com.provys.auth</groupId>
+        <artifactId>auth-none</artifactId>
+        <version>${auth.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.provys.auth</groupId>
         <artifactId>auth-oracle</artifactId>
+        <version>${auth.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.provys.auth</groupId>
+        <artifactId>auth-extuser</artifactId>
+        <version>${auth.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.provys.auth</groupId>
+        <artifactId>auth-mock</artifactId>
         <version>${auth.version}</version>
       </dependency>
       <dependency>
@@ -143,7 +158,20 @@
     </dependency>
     <dependency>
       <groupId>com.provys.auth</groupId>
+      <artifactId>auth-none</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.provys.auth</groupId>
       <artifactId>auth-oracle</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.provys.auth</groupId>
+      <artifactId>auth-extuser</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.provys.auth</groupId>
+      <artifactId>auth-mock</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
