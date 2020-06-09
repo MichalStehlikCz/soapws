@@ -45,7 +45,7 @@ public class WsdlQueryCompatibilityFilter implements Filter {
         && "wsdl".equalsIgnoreCase(request.getQueryString())) {
       var requestWrapper = new WsdlQueryRequestWrapper(request);
       request.getSession().getServletContext()
-          .getRequestDispatcher(request.getServletPath() + request.getPathInfo() + ".wsdl")
+          .getRequestDispatcher(request.getServletPath() + ".wsdl")
           .forward(requestWrapper, response);
     } else {
       chain.doFilter(request, response);
