@@ -10,6 +10,7 @@ public class EndpointDefinition {
   private final String name;
   private final String path;
   private final String packageNm;
+  private final String authProvider;
   private final XsdSchema xsdSchema;
 
   private static String validatePath(String name, @Nullable String path) {
@@ -27,16 +28,18 @@ public class EndpointDefinition {
    * @param name is name of endpoint
    * @param path is path (not used at the moment)
    * @param packageNm is package handling calls to this endpoint
+   * @param authProvider is authentication provider used for this endpoint
    * @param xsdSchema is xsd defining requests for this endpoint
    */
   public EndpointDefinition(String name, @Nullable String path, String packageNm,
-      XsdSchema xsdSchema) {
+      String authProvider, XsdSchema xsdSchema) {
     if (name.isEmpty()) {
       throw new IllegalArgumentException("Endpoint name cannot be empty");
     }
     this.name = name;
     this.path = validatePath(name, path);
     this.packageNm = Objects.requireNonNull(packageNm);
+    this.authProvider = Objects.requireNonNull(authProvider);
     this.xsdSchema = Objects.requireNonNull(xsdSchema);
   }
 
@@ -68,6 +71,15 @@ public class EndpointDefinition {
   }
 
   /**
+   * Value of field authProvider.
+   *
+   * @return value of field authProvider
+   */
+  public String getAuthProvider() {
+    return authProvider;
+  }
+
+  /**
    * Value of field xsdSchema.
    *
    * @return value of field xsdSchema
@@ -86,16 +98,18 @@ public class EndpointDefinition {
     }
     EndpointDefinition that = (EndpointDefinition) o;
     return name.equals(that.name)
-        && Objects.equals(path, that.path)
+        && path.equals(that.path)
         && packageNm.equals(that.packageNm)
+        && authProvider.equals(that.authProvider)
         && xsdSchema.equals(that.xsdSchema);
   }
 
   @Override
   public int hashCode() {
     int result = name.hashCode();
-    result = 31 * result + (path != null ? path.hashCode() : 0);
+    result = 31 * result + path.hashCode();
     result = 31 * result + packageNm.hashCode();
+    result = 31 * result + authProvider.hashCode();
     result = 31 * result + xsdSchema.hashCode();
     return result;
   }
@@ -106,6 +120,7 @@ public class EndpointDefinition {
         + "name='" + name + '\''
         + ", path='" + path + '\''
         + ", packageNm='" + packageNm + '\''
+        + ", authProvider='" + authProvider + '\''
         + ", xsdSchema=" + xsdSchema
         + '}';
   }

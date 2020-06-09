@@ -27,6 +27,8 @@ import org.xml.sax.SAXException;
 @Configuration
 public class DbConfigReader {
 
+  private static final String DEFAULT_AUTH_PROVIDER = "NONE";
+
   private final String deviceNm;
   private final DbContext dbContext;
 
@@ -123,6 +125,8 @@ public class DbConfigReader {
             + "  , VID_DevIfaceParam_EP.mfw_GetValue_DevIface(deviface.deviface_id, 'PATH')\n"
             + "  , VID_DevIfaceParam_EP.mfw_GetValue_DevIface(deviface.deviface_id,"
             + " 'PACKAGE_NM')\n"
+            + "  , VID_DevIfaceParam_EP.mfw_GetValue_DevIface(deviface.deviface_id,"
+            + " 'AUTHPROVIDER_NM')\n"
             + "  , KER_AttrVal_EP.mf_GetValueB_NMObject(\n"
             + "          VID_DevIfaceParam_EP.mfw_GetID_DevIface(deviface.deviface_id, 'XSD')\n"
             + "        , 'DEVIFACEPARAM'\n"
@@ -140,11 +144,16 @@ public class DbConfigReader {
         List<EndpointDefinition> endpointDefinitions = new ArrayList<>(5);
         while (resultSet.next()) {
           // read endpoint definition
+          var authProvider = resultSet.getNullableString(4);
+          if (authProvider == null) {
+            authProvider = DEFAULT_AUTH_PROVIDER;
+          }
           endpointDefinitions.add(new EndpointDefinition(
               resultSet.getNonNullString(1),
               resultSet.getNullableString(2),
               resultSet.getNonNullString(3),
-              getXsdFromBinaryData(resultSet.getNonNullDtBinaryData(4))));
+              authProvider,
+              getXsdFromBinaryData(resultSet.getNonNullDtBinaryData(5))));
         }
         return endpointDefinitions;
       }
