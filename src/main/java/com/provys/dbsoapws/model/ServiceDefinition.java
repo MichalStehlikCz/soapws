@@ -19,6 +19,18 @@ public class ServiceDefinition {
   private final Map<String, EndpointDefinition> endpointsByNamespace;
 
   /**
+   * Verify uniqueness of path.
+   *
+   * @param endpoints is list of endpoints assigned to service
+   */
+  @SuppressWarnings({"ResultOfMethodCallIgnored", "ResultValueIgnored"})
+  // Collector will throw exception when it encounters duplicity, but we do not care about result
+  private static void verifyPathUnique(Collection<? extends EndpointDefinition> endpoints) {
+    endpoints.stream()
+        .collect(Collectors.toMap(EndpointDefinition::getPath, Function.identity()));
+  }
+
+  /**
    * Create service definition based on supplied parameters.
    *
    * @param port is port on which service should be available; null means service.port config will
@@ -39,6 +51,7 @@ public class ServiceDefinition {
     } else {
       this.servicePath = '/' + servicePath;
     }
+    verifyPathUnique(endpoints);
     this.endpointsByNamespace = endpoints.stream()
         .collect(
             Collectors.toUnmodifiableMap(endpoint -> endpoint.getXsdSchema().getTargetNamespace(),
