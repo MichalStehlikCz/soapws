@@ -1,5 +1,6 @@
 package com.provys.dbsoapws.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.xml.xsd.XsdSchema;
@@ -7,9 +8,18 @@ import org.springframework.xml.xsd.XsdSchema;
 public class EndpointDefinition {
 
   private final String name;
-  private final @Nullable String path;
+  private final String path;
   private final String packageNm;
   private final XsdSchema xsdSchema;
+
+  private static String validatePath(String name, @Nullable String path) {
+    var result = (path == null) ? name : path;
+    if (result.charAt(0) != '/') {
+      result = '/' + result;
+    }
+    result = result.toLowerCase(Locale.ENGLISH);
+    return result;
+  }
 
   /**
    * Create new endpoint definition with supplied properties.
@@ -21,10 +31,13 @@ public class EndpointDefinition {
    */
   public EndpointDefinition(String name, @Nullable String path, String packageNm,
       XsdSchema xsdSchema) {
+    if (name.isEmpty()) {
+      throw new IllegalArgumentException("Endpoint name cannot be empty");
+    }
     this.name = name;
-    this.path = path;
-    this.packageNm = packageNm;
-    this.xsdSchema = xsdSchema;
+    this.path = validatePath(name, path);
+    this.packageNm = Objects.requireNonNull(packageNm);
+    this.xsdSchema = Objects.requireNonNull(xsdSchema);
   }
 
   /**
@@ -41,7 +54,7 @@ public class EndpointDefinition {
    *
    * @return value of field path
    */
-  public @Nullable String getPath() {
+  public String getPath() {
     return path;
   }
 
