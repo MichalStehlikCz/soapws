@@ -16,11 +16,18 @@ public class WebServerCustomizer
 
   private final @Nullable Integer port;
   private final @Nullable String address;
+  private final String servicePath;
 
+  /**
+   * Create web server customized that will configure web server based on our ServiceDefinition.
+   *
+   * @param serviceDefinition is service definition for our db soap webservice
+   */
   @Autowired
   public WebServerCustomizer(ServiceDefinition serviceDefinition) {
     this.port = serviceDefinition.getPort();
     this.address = serviceDefinition.getAddress();
+    this.servicePath = serviceDefinition.getServicePath();
   }
 
   @Override
@@ -36,6 +43,7 @@ public class WebServerCustomizer
             + "for listening interface", e);
       }
     }
+    webServerFactory.setContextPath(servicePath);
   }
 
   @Override
@@ -43,6 +51,7 @@ public class WebServerCustomizer
     return "WebServerCustomizer{"
         + "port=" + port
         + ", address='" + address + '\''
+        + ", servicePath='" + servicePath + '\''
         + '}';
   }
 }

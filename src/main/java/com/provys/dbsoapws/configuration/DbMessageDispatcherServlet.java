@@ -32,11 +32,10 @@ class DbMessageDispatcherServlet extends MessageDispatcherServlet {
   private final Map<String, XsdSchema> xsdSchemas;
   private final Map<String, WsdlDefinition> wsdlDefinitions;
 
-  private static WsdlDefinition buildWsdlFromXsd(String servicePath, String name,
-      XsdSchema xsdSchema) {
+  private static WsdlDefinition buildWsdlFromXsd(String name, XsdSchema xsdSchema) {
     var wsdlDefinition = new DefaultWsdl11Definition();
     wsdlDefinition.setPortTypeName(name + "Port");
-    wsdlDefinition.setLocationUri(servicePath + '/' + name.toLowerCase(Locale.ENGLISH));
+    wsdlDefinition.setLocationUri('/' + name.toLowerCase(Locale.ENGLISH));
     wsdlDefinition.setTargetNamespace(xsdSchema.getTargetNamespace());
     wsdlDefinition.setSchema(xsdSchema);
     try {
@@ -53,8 +52,7 @@ class DbMessageDispatcherServlet extends MessageDispatcherServlet {
         .collect(Collectors.toUnmodifiableMap(Entry::getKey, Entry::getValue));
     this.wsdlDefinitions = serviceDefinition.getEndpoints().stream()
         .map(epd -> Map.entry(epd.getName().toLowerCase(Locale.ENGLISH),
-            buildWsdlFromXsd(serviceDefinition.getServicePath(), epd.getName(),
-                epd.getXsdSchema())))
+            buildWsdlFromXsd(epd.getName(), epd.getXsdSchema())))
         .collect(Collectors.toUnmodifiableMap(Entry::getKey, Entry::getValue));
   }
 
