@@ -95,15 +95,22 @@ public class DbSoapWsEndpoint {
     }
   }
 
+  /**
+   * Operation being invoked by all SOAP calls. Deciphers package name from target namespace and
+   * operation from operation name and calls database.
+   *
+   * @param request is SOAP request payload
+   * @return result returned from database
+   */
   @ResponsePayload
-  public StreamSource operation(@RequestPayload StreamSource request,
-      MessageContext messageContext) {
+  public StreamSource operation(@RequestPayload StreamSource request) {
     byte[] requestData = readRequestData(request);
     TransportContext context = TransportContextHolder.getTransportContext();
     @SuppressWarnings("resource") // we do not manage this connection, only access its properties
     HttpServletConnection connection = (HttpServletConnection )context.getConnection();
     HttpServletRequest httpRequest = connection.getHttpServletRequest();
-    return serverCall(requestData, httpRequest.getServletPath() + httpRequest.getPathInfo());
+    return serverCall(requestData, httpRequest.getServletPath()
+        + (httpRequest.getPathInfo() == null ? "" : httpRequest.getPathInfo()));
   }
 
   @Override
