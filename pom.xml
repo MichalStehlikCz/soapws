@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.provys.parent</groupId>
     <artifactId>parent</artifactId>
-    <version>1.10.0</version>
+    <version>1.12.0</version>
   </parent>
   <groupId>com.provys.dbsoapws</groupId>
   <artifactId>dbsoapws</artifactId>
@@ -12,9 +12,9 @@
   <packaging>jar</packaging>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <common.version>3.16.2</common.version>
-    <auth.version>3.0.1</auth.version>
-    <db.version>3.7.0</db.version>
+    <common.version>3.17.2</common.version>
+    <auth.version>3.1.2</auth.version>
+    <db.version>3.8.1</db.version>
   </properties>
   <scm>
     <developerConnection>scm:git:https://github.com/MichalStehlikCz/soapws.git</developerConnection>
@@ -179,10 +179,19 @@
       <scope>test</scope>
       <exclusions>
         <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-logging</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>org.junit.vintage</groupId>
           <artifactId>junit-vintage-engine</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>

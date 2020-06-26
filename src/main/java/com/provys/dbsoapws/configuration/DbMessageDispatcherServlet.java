@@ -66,7 +66,8 @@ class DbMessageDispatcherServlet extends MessageDispatcherServlet {
   protected @Nullable WsdlDefinition getWsdlDefinition(HttpServletRequest request) {
     if (HttpTransportConstants.METHOD_GET.equals(request.getMethod())
         && request.getRequestURI().endsWith(WSDL_SUFFIX_NAME)) {
-      return wsdlDefinitions.get(request.getServletPath());
+      return wsdlDefinitions.get(request.getServletPath()
+          + (request.getPathInfo() == null ? "" : request.getPathInfo()));
     }
     return null;
   }
@@ -76,7 +77,8 @@ class DbMessageDispatcherServlet extends MessageDispatcherServlet {
   protected @Nullable XsdSchema getXsdSchema(HttpServletRequest request) {
     if (HttpTransportConstants.METHOD_GET.equals(request.getMethod())
         && request.getRequestURI().endsWith(XSD_SUFFIX_NAME)) {
-      return xsdSchemas.get(request.getServletPath());
+      return xsdSchemas.get(request.getServletPath()
+          + (request.getPathInfo() == null ? "" : request.getPathInfo()));
     }
     return null;
   }

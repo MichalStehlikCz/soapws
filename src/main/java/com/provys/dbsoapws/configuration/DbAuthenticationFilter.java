@@ -5,6 +5,7 @@ import com.provys.auth.api.AuthProviderLookup;
 import com.provys.auth.none.NoneAuthenticationConverter;
 import com.provys.auth.none.NoneAuthenticationToken;
 import com.provys.common.exception.InternalException;
+import com.provys.dbsoapws.model.EndpointDefinition;
 import com.provys.dbsoapws.model.ServiceDefinition;
 import java.io.IOException;
 import java.util.Locale;
@@ -17,6 +18,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -34,35 +37,39 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 public class DbAuthenticationFilter extends OncePerRequestFilter {
 
-  private final Map<String, AuthenticationExecutor> executorsByUrl;
+  private static final Logger LOG = LogManager.getLogger(DbAuthenticationFilter.class);
+
+  private final Map<String, AuthenticationExecutor> executorsByPath;
 
   private static Map<String, AuthenticationExecutor> buildExecutorMap(
       ServiceDefinition serviceDefinition,
       AuthProviderLookup authProviderLookup) {
     return serviceDefinition.getEndpoints().stream()
         .collect(Collectors.toUnmodifiableMap(
-            endpoint -> endpoint.getName().toLowerCase(Locale.ENGLISH),
-            endpoint -> new AuthenticationExecutor(endpoint.getAuthProvider(),
+            EndpointDefinition::getPath,
+            endpoint -> new AuthenticationExecutor(endpoint.getName(), endpoint.getAuthProvider(),
                 authProviderLookup)));
   }
 
   DbAuthenticationFilter(ServiceDefinition serviceDefinition,
       AuthProviderLookup authProviderLookup) {
-    executorsByUrl = buildExecutorMap(serviceDefinition, authProviderLookup);
+    executorsByPath = buildExecutorMap(serviceDefinition, authProviderLookup);
   }
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain chain) throws ServletException, IOException {
     // retrieve authentication converter and provider for given uri
-    var path = request.getServletPath() + request.getPathInfo();
-    if (!path.isEmpty()) {
-      path = path.substring(1);
-      var executor = executorsByUrl.get(path);
+    var path = request.getServletPath()
+        + (request.getPathInfo() == null ? "" : request.getPathInfo());
+    if (!("GET".equals(request.getMethod()) && (path.endsWith(".wsdl") || path.endsWith(".xsd")))) {
+      var executor = executorsByPath.get(path);
       if (executor != null) {
         if (!executor.authenticate(request, response)) {
           return;
         }
+      } else {
+        LOG.info("Authentication configuration not found for path {}", path);
       }
     }
     chain.doFilter(request, response);
@@ -89,9 +96,10 @@ public class DbAuthenticationFilter extends OncePerRequestFilter {
       this.entryPoint = entryPoint;
     }
 
-    AuthenticationExecutor(String name, AuthProviderLookup authProviderLookup) {
+    AuthenticationExecutor(String name, String authProvider,
+        AuthProviderLookup authProviderLookup) {
       this.name = name;
-      this.provider = authProviderLookup.getAuthProvider(name);
+      this.provider = authProviderLookup.getAuthProvider(authProvider);
       if (provider.supports(NoneAuthenticationToken.class)) {
         // doesn't need any specific information
         this.converter = NoneAuthenticationConverter.getInstance();
@@ -99,9 +107,9 @@ public class DbAuthenticationFilter extends OncePerRequestFilter {
       } else if (provider.supports(UsernamePasswordAuthenticationToken.class)) {
         this.converter = new BasicAuthenticationConverter();
         this.entryPoint = new BasicAuthenticationEntryPoint();
-        ((BasicAuthenticationEntryPoint) this.entryPoint).setRealmName("REALM");
+        ((BasicAuthenticationEntryPoint) this.entryPoint).setRealmName("Realm");
       } else {
-        throw new InternalException("Cannot set up endpoint " + provider
+        throw new InternalException("Cannot set up endpoint " + name + "with provider " + provider
             + "; no supported converter can extract credentials for configured provider");
       }
     }
@@ -136,19 +144,23 @@ public class DbAuthenticationFilter extends OncePerRequestFilter {
            Credentials were not retrieved - we cannot authenticate, thus continue with request
            processing
            */
-          return true;
+          LOG.debug("No credentials found, endpoint {}, converter {}", name, converter);
+          return onFailure(request, response);
         }
         authResult = provider.authenticate(authSource);
         if (authResult == null) {
+          LOG.info("Empty authentication result, endpoint {}, provider {}", name, provider);
           return onFailure(request, response);
         }
       } catch (AuthenticationException e) {
+        LOG.info("Authentication failed, endpoint {}, provider {}", name, provider);
         return onFailure(request, response);
       }
       // and set authentication to security context
       try {
         SecurityContextHolder.getContext().setAuthentication(authResult);
       } catch (AccessDeniedException e) {
+        LOG.info("Failed to set authentication to security context, endpoint {}", name);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         return false;
       }
@@ -170,7 +182,7 @@ public class DbAuthenticationFilter extends OncePerRequestFilter {
   @Override
   public String toString() {
     return "DbAuthenticationFilter{"
-        + "executorsByUrl=" + executorsByUrl
+        + "executorsByPath=" + executorsByPath
         + '}';
   }
 }
